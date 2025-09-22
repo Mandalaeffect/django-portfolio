@@ -1,0 +1,386 @@
+{% load static %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if profile %}{{ profile.name }}'s Portfolio{% else %}Portfolio{% endif %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍💻</text></svg>">
+</head>
+<body>
+    <header class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title" data-text="{% if profile %}{{ profile.name }}{% endif %}"></h1>
+                <p class="hero-subtitle"></p>
+                <div class="hero-contact" style="display: none;">
+                    <p>{% if profile %}{{ profile.location }} | {{ profile.phone }} | {{ profile.email }}{% endif %}</p>
+                </div>
+                <div class="hero-social" style="display: none;">
+                    {% if profile %}
+                        <a href="{{ profile.linkedin }}" target="_blank" class="social-btn linkedin">
+                            <span class="icon">💼</span> LinkedIn
+                        </a>
+                        <a href="{{ profile.github }}" target="_blank" class="social-btn github">
+                            <span class="icon">🐙</span> GitHub
+                        </a>
+                        <a href="/static/cv/Bibek-Raya-cv.pdf" download class="social-btn cv">
+                            <span class="icon">📄</span> Download CV
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="hero-code" style="display: none;">
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="code-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="code-title">portfolio.py</span>
+                    </div>
+                    <div class="code-content">
+                        <pre><code id="code-block"></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-bg-pattern"></div>
+    </header>
+
+ <section id="about" style="display: none;">
+    <div class="container">
+        <h2>👨‍💻 ABOUT THE PYTHON DEVELOPER</h2>
+        <p>Final-year BCA student and passionate Python Django Developer with a keen interest in Artificial Intelligence. Experienced in building robust web applications using Django framework, and have developed several AI-powered projects including machine learning models, computer vision applications, and intelligent systems. Skilled in Python, TensorFlow, PyTorch, and modern web technologies.</p>
+
+        <div class="hacker-stats">
+            <div class="stat">
+                <span class="stat-number" data-target="6"></span>
+                <span class="stat-label">Projects</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number" data-target="3"></span>
+                <span class="stat-label">Years Coding</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number" data-target="90"></span>
+                <span class="stat-label">Accuracy Rate</span>
+                <span class="stat-unit">%</span>
+            </div>
+            <div class="stat coffee-stat">
+                <span class="stat-number" data-target="100+" id="coffee-cups"></span>
+                <span class="stat-label">Coffee Cups</span>
+            </div>
+        </div>
+
+        <p class="coffee-explanation">☕ Coffee Cups: A humorous tracker of coffee consumed during coding sessions, increasing over time to reflect productivity or late-night work.</p>
+    </div>
+</section>
+
+<script>
+    // Animated counters for stats with odometer effect
+    function animateCounters() {
+        const counters = document.querySelectorAll('.stat-number');
+        counters.forEach(counter => {
+            counter.classList.add('counting');
+            const targetStr = counter.getAttribute('data-target');
+            let target = targetStr.includes('+') ? parseInt(targetStr.replace('+', '')) : parseInt(targetStr);
+            let current = 0;
+            const isPercentage = counter.nextElementSibling && counter.nextElementSibling.classList.contains('stat-unit') && counter.nextElementSibling.textContent === '%';
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    counter.textContent = Math.floor(target) + (targetStr.includes('+') ? '+' : '') + (isPercentage ? '%' : '');
+                    counter.classList.remove('counting');
+                    counter.classList.add('finished');
+                    clearInterval(timer);
+                } else {
+                    counter.textContent = Math.floor(current) + (isPercentage ? '%' : '');
+                }
+            }, 30);
+        });
+    }
+
+    // Animate counters after page load
+    function setupCounterAnimation() {
+        // Trigger animation when terminal section is visible
+        const terminalSection = document.querySelector('#terminal');
+        if (terminalSection) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounters();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            observer.observe(terminalSection);
+        }
+    }
+
+    // Trigger setup
+    setupCounterAnimation();
+
+    // Typing effect for code block
+    function typeCode() {
+        const codeBlock = document.getElementById('code-block');
+        const code = `def create_portfolio():
+    developer = {
+        'name': 'Bibek Rayamajhi',
+        'skills': ['Python', 'Django', 'AI/ML'],
+        'passion': 'Building amazing solutions'
+    }
+    return developer
+
+if __name__ == '__main__':
+    portfolio = create_portfolio()
+    print("🚀 Portfolio Ready!")`;
+        let i = 0;
+        function typeNext() {
+            if (i < code.length) {
+                codeBlock.textContent += code.charAt(i);
+                i++;
+                setTimeout(typeNext, 50);
+            } else {
+                // Typing completed, show the sections and footer
+                const elements = document.querySelectorAll('section, footer');
+                elements.forEach(el => {
+                    el.style.display = 'block';
+                });
+                // Now set up counter animation
+                setupCounterAnimation();
+                // Start terminal animation
+                window.enhanceTerminalTyping();
+            }
+        }
+        setTimeout(typeNext, 1000); // Start after 1 second
+    }
+
+    // Type the name
+    const nameElement = document.querySelector('.hero-title');
+    const subtitleElement = document.querySelector('.hero-subtitle');
+    const nameText = "Bibek Rayamajhi";
+    const subtitleText = "Python Django Developer | Interested in AI | Built Innovative Projects";
+    let nameIndex = 0;
+
+    function typeName() {
+        if (nameIndex < nameText.length) {
+            nameElement.textContent += nameText.charAt(nameIndex);
+            nameIndex++;
+            setTimeout(typeName, 100);
+        } else {
+            // Name done, type subtitle
+            let subtitleIndex = 0;
+            function typeSubtitle() {
+                if (subtitleIndex < subtitleText.length) {
+                    subtitleElement.textContent += subtitleText.charAt(subtitleIndex);
+                    subtitleIndex++;
+                    setTimeout(typeSubtitle, 50);
+                } else {
+                    // Subtitle done, show contact and social, then code
+                    document.querySelector('.hero-contact').style.display = 'block';
+                    document.querySelector('.hero-social').style.display = 'block';
+                    setTimeout(() => {
+                        document.querySelector('.hero-code').style.display = 'block';
+                        typeCode();
+                    }, 500);
+                }
+            }
+            setTimeout(typeSubtitle, 500);
+        }
+    }
+
+    setTimeout(typeName, 500);
+</script>
+
+
+    <section id="projects" style="display: none;">
+        <div class="container">
+            <h2>Selected Projects</h2>
+            <div class="projects">
+                <div class="project">
+                    <h3>E‑Commerce Website</h3>
+                    <p>Built a full-featured e‑commerce platform with secure payment gateway integration, user authentication, and product management using PHP, JavaScript, HTML, and CSS.</p>
+                </div>
+                <div class="project">
+                    <h3>Share Market Prediction System</h3>
+                    <p>Designed a machine learning model using Python and Django to forecast NEPSE stock trends, improving prediction accuracy with LSTM and Prophet.</p>
+                </div>
+                <div class="project">
+                    <h3>Face Recognition System</h3>
+                    <p>Developed a Python/OpenCV-based facial recognition app achieving 95% accuracy on a 1,000‑image dataset.</p>
+                </div>
+                <div class="project">
+                    <h3>Eye Disease Detection</h3>
+                    <p>Implemented CNN-based image processing to classify cataract, diabetic retinopathy, and glaucoma from retinal images.</p>
+                </div>
+                <div class="project">
+                    <h3>Student Management REST API</h3>
+                    <p>Created Django REST API with Swagger documentation for attendance tracking, exam scheduling, and email notifications.</p>
+                </div>
+                <div class="project">
+                    <h3>NCON Website</h3>
+                    <p>Developed a comprehensive website for NCON (https://nconnnp.org/) featuring modern design, responsive layout, and interactive elements.</p>
+                </div>
+                <div class="project">
+                    <h3>College Website Chatbot</h3>
+                    <p>Built an AI-powered chatbot for Nepal Mega College's website (https://megacollegeofmanagement.edu.np/) to handle student queries and automate responses.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" style="display: none;">
+        <div class="container">
+            <h2>Technical Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3>Programming</h3>
+                    <p>Python, Django, Java (Android), C, C#, PHP, JavaScript, HTML, CSS</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Machine Learning & AI</h3>
+                    <p>CNN, Image Processing, OpenCV, Data Analysis</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Web Development</h3>
+                    <p>RESTful APIs, Payment Gateway Integration, Full-stack Design</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Networking</h3>
+                    <p>LAN/WAN/VPN, Network Configuration & Troubleshooting, Security Protocols</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Operating Systems</h3>
+                    <p>Windows & Linux</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="education" style="display: none;">
+        <div class="container">
+            <h2>Education</h2>
+            <ul>
+                <li><strong>Bachelor in Computer Applications (BCA)</strong><br>Nepal Mega College — Expected 2026</li>
+                <li><strong>Higher Secondary (+2)</strong><br>Annapurna Secondary School — 2021</li>
+                <li><strong>Secondary Education Examination (SEE)</strong><br>Annapurna Higher School — 2019</li>
+            </ul>
+        </div>
+    </section>
+
+
+    <section id="terminal" class="terminal-section" style="display: none;">
+        <div class="container">
+            <h2>🧠 AI TERMINAL</h2>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span class="terminal-title">bibek@ai:~#</span>
+                    <div class="terminal-status">
+                        <span class="status-indicator online"></span>
+                        CONNECTED
+                    </div>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-output">
+                        <p><span class="terminal-prompt">ai@neural:~#</span> whoami</p>
+                        <p>bibek-rayamajhi</p>
+                        <p><span class="terminal-prompt">ai@neural:~#</span> cat /etc/ai_config.conf</p>
+                        <p>TensorFlow, PyTorch, Computer Vision, Deep Learning, Neural Networks</p>
+                        <p><span class="terminal-prompt">ai@neural:~#</span> echo "Initializing AI engine..."</p>
+                        <p>Initializing AI engine...</p>
+                        <p><span class="terminal-prompt">ai@neural:~#</span> ls -la /ai_models/</p>
+                        <p>drwxr-xr-x 2 ai ai 4096 Sep 22 16:00 .</p>
+                        <p>drwxr-xr-x 3 ai ai 4096 Sep 22 15:45 ..</p>
+                        <p>-rw-r--r-- 1 ai ai 2048 Sep 22 16:00 vision_transformer/</p>
+                        <p>-rw-r--r-- 1 ai ai 1536 Sep 22 15:50 gpt_fine_tune/</p>
+                        <p>-rw-r--r-- 1 ai ai 1024 Sep 22 15:30 reinforcement_learning/</p>
+                        <p><span class="terminal-prompt">ai@neural:~#</span> echo "NCON: <a href='https://nconnnp.org/' target='_blank' style='color: #00ff88;'>https://nconnnp.org/</a>"</p>
+                        <p>NCON: <a href="https://nconnnp.org/" target="_blank" style="color: #00ff88;">https://nconnnp.org/</a></p>
+                        <p><span class="terminal-prompt">ai@neural:~#</span> echo "Chatbot: <a href='https://megacollegeofmanagement.edu.np/' target='_blank' style='color: #00ff88;'>https://megacollegeofmanagement.edu.np/</a>"</p>
+                        <p>Chatbot: <a href="https://megacollegeofmanagement.edu.np/" target="_blank" style="color: #00ff88;">https://megacollegeofmanagement.edu.np/</a></p>
+                        <p><span class="terminal-prompt">ai@neural:~#</span> <span class="cursor">_</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <footer class="developer-footer" style="display: none;">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section footer-brand">
+                    <h3>
+                        <span class="code-icon"></></span>
+                        {% if profile %}{{ profile.name }}{% endif %}
+                    </h3>
+                    <p>AI POWERED</p>
+                    <p>> Building the future, one neural network at a time...</p>
+                    <div class="system-status">
+                        <div class="status-bar">
+                            <span class="status-label">SYSTEM STATUS:</span>
+                            <span class="status-value online">ONLINE</span>
+                        </div>
+                        <div class="status-bar">
+                            <span class="status-label">SECURITY:</span>
+                            <span class="status-value secure">ENCRYPTED</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="footer-section footer-social">
+                    <h4>SOCIAL NETWORKS</h4>
+                    <div class="footer-social-links">
+                        {% if profile %}
+                            <a href="{{ profile.github }}" target="_blank" title="GitHub" class="social-hack">
+                                <span class="social-icon">🐙</span>
+                                <span class="social-text">GitHub</span>
+                            </a>
+                            <a href="{{ profile.linkedin }}" target="_blank" title="LinkedIn" class="social-hack">
+                                <span class="social-icon">💼</span>
+                                <span class="social-text">LinkedIn</span>
+                            </a>
+                        {% endif %}
+                        <a href="mailto:{% if profile %}{{ profile.email }}{% endif %}" title="Email" class="social-hack">
+                            <span class="social-icon">📧</span>
+                            <span class="social-text">Email</span>
+                        </a>
+                        <a href="tel:{% if profile %}{{ profile.phone }}{% endif %}" title="Phone" class="social-hack">
+                            <span class="social-icon">📱</span>
+                            <span class="social-text">Phone</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 {% if profile %}{{ profile.name }}{% endif %} | <span class="hacker-code">root@hacker:~# echo "Made with ❤️ and lots of ☕"</span></p>
+                <div class="footer-tech">
+                    <span class="tech-stack">Python</span>
+                    <span class="tech-stack">TensorFlow</span>
+                    <span class="tech-stack">PyTorch</span>
+                    <span class="tech-stack">OpenCV</span>
+                    <span class="tech-stack">CUDA</span>
+                </div>
+                <div class="encryption-code">
+                    <span class="encrypt-line">01010100 01101000 01100001 01101110 01101011 00100000 01111001 01101111 01110101 00100000 01100110 01101111 01110010 00100000 01110110 01101001 01110011 01101001 01110100 01101001 01101110 01100111</span>
+                </div>
+            </div>
+            <div class="matrix-bg"></div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}?v={{ request.GET.version|default:'1' }}"></script>
+</body>
+</html>
