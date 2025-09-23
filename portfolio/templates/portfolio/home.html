@@ -1,5 +1,7 @@
 {% load static %}
 {% load static %}
+{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +28,7 @@
                         <a href="{{ profile.github }}" target="_blank" class="social-btn github">
                             <span class="icon">🐙</span> GitHub
                         </a>
-                        <a href="/static/cv/Bibek-Raya-cv.pdf" download class="social-btn cv">
+                        <a href="/static/cv/Bibek-Raya-cv.pdf" download class="social-btn cv" style="margin-left: 10px;">
                             <span class="icon">📄</span> Download CV
                         </a>
                     {% endif %}
@@ -58,20 +60,20 @@
 
         <div class="hacker-stats">
             <div class="stat">
-                <span class="stat-number" data-target="6"></span>
+                <span class="stat-number" data-target="6">6</span>
                 <span class="stat-label">Projects</span>
             </div>
             <div class="stat">
-                <span class="stat-number" data-target="3"></span>
+                <span class="stat-number" data-target="3">3</span>
                 <span class="stat-label">Years Coding</span>
             </div>
             <div class="stat">
-                <span class="stat-number" data-target="90"></span>
+                <span class="stat-number" data-target="90">90</span>
                 <span class="stat-label">Accuracy Rate</span>
                 <span class="stat-unit">%</span>
             </div>
             <div class="stat coffee-stat">
-                <span class="stat-number" data-target="100+" id="coffee-cups"></span>
+                <span class="stat-number" data-target="100+" id="coffee-cups">100+</span>
                 <span class="stat-label">Coffee Cups</span>
             </div>
         </div>
@@ -131,8 +133,10 @@
         const code = `def create_portfolio():
     developer = {
         'name': 'Bibek Rayamajhi',
-        'skills': ['Python', 'Django', 'AI/ML'],
-        'passion': 'Building amazing solutions'
+        'skills': ['Python', 'Django',
+'AI/ML'],
+        'passion': 'Building amazing
+solutions'
     }
     return developer
 
@@ -184,10 +188,25 @@ if __name__ == '__main__':
                     // Subtitle done, show contact and social, then code
                     document.querySelector('.hero-contact').style.display = 'block';
                     document.querySelector('.hero-social').style.display = 'block';
-                    setTimeout(() => {
-                        document.querySelector('.hero-code').style.display = 'block';
-                        typeCode();
-                    }, 500);
+                    // Type the contact info
+                    const contactElement = document.querySelector('.hero-contact p');
+                    const contactText = contactElement.textContent;
+                    contactElement.textContent = '';
+                    let contactIndex = 0;
+                    function typeContact() {
+                        if (contactIndex < contactText.length) {
+                            contactElement.textContent += contactText.charAt(contactIndex);
+                            contactIndex++;
+                            setTimeout(typeContact, 50);
+                        } else {
+                            // Contact done, show code
+                            setTimeout(() => {
+                                document.querySelector('.hero-code').style.display = 'block';
+                                typeCode();
+                            }, 500);
+                        }
+                    }
+                    setTimeout(typeContact, 500);
                 }
             }
             setTimeout(typeSubtitle, 500);
@@ -384,3 +403,4 @@ if __name__ == '__main__':
     <script src="{% static 'js/script.js' %}?v={{ request.GET.version|default:'1' }}"></script>
 </body>
 </html>
+
